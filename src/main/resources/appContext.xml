@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context.xsd">
+
+<context:component-scan base-package="ru.test.TwoLevelCache"/>
+
+    <bean id ="firstCacheLevel" class="ru.test.TwoLevelCache.FirstLevelCache.RamCache">
+        <constructor-arg  type="int" name="maxSizeCache" value="4"/>
+    </bean>
+
+    <bean id="secondCacheLevel" class="ru.test.TwoLevelCache.SecondLevelCache.MemoryCache">
+        <constructor-arg type="int" name="maxSizeMemory" value="25"/>
+    </bean>
+
+    <bean id="twoLevelCache" class="ru.test.TwoLevelCache.TwoLevelCache.TwoLevelCache">
+        <constructor-arg  type="int" name="maxSizeRam" value="4"/>
+        <constructor-arg type="int" name="maxSizeMemory" value="25"/>
+        <constructor-arg type="int" name="levelChange" value="3"/>
+    </bean>
+
+    <bean id="testObjectRandomBuilder" class="ru.test.TwoLevelCache.TestObjectRandomBuilder">
+        <constructor-arg type="int" name="maxKey" value="4"/>
+        <constructor-arg type="int" name="maxNumberTestObject" value="1500"/>
+    </bean>
+
+    <bean id="ObjectsThreads" class="ru.test.TwoLevelCache.RequestThreads">
+        <constructor-arg name="testObjectRandomBuilder" ref="testObjectRandomBuilder"/>
+        <constructor-arg ref="twoLevelCache" name="twoLevelCache"/>
+        <constructor-arg name="maxRequest" type="int" value="1000"/>
+        <constructor-arg name="maxThread" type="int" value="5"/>
+
+    </bean>
+
+    <bean id="ResponseObject" class="ru.test.TwoLevelCache.ResponseThreads">
+        <constructor-arg name="testObjectRandomBuilder" ref="testObjectRandomBuilder"/>
+        <constructor-arg ref="twoLevelCache" name="twoLevelCache"/>
+        <constructor-arg name="maxRequest" type="int" value="1000"/>
+        <constructor-arg name="maxThread" type="int" value="5"/>
+
+    </bean>
+</beans>
